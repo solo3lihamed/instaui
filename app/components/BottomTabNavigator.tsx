@@ -1,8 +1,9 @@
+import React from 'react';
+import { Text, View, StyleSheet } from 'react-native';
 import { Tabs } from 'expo-router';
-import { Ionicons, MaterialCommunityIcons, Feather } from '@expo/vector-icons';
-import { View, StyleSheet } from 'react-native';
+import { Ionicons, MaterialCommunityIcons, AntDesign, Feather } from '@expo/vector-icons';
 
-export default function RootLayout() {
+export const BottomTabNavigator = () => {
   return (
     <Tabs
       screenOptions={{
@@ -25,18 +26,6 @@ export default function RootLayout() {
               />
             </View>
           ),
-          title: 'Home',
-          headerShown: true,
-          headerTitle: 'Instagram',
-          headerTitleAlign: 'center',
-          headerRight: () => (
-            <View style={{ flexDirection: 'row', marginRight: 16 }}>
-              <Ionicons name="paper-plane-outline" size={28} color="#000" style={{ marginHorizontal: 8 }} />
-              <Feather name="compass" size={28} color="#000" style={{ marginHorizontal: 8 }} />
-              <Feather name="heart" size={28} color="#000" style={{ marginHorizontal: 8 }} />
-              <Feather name="user" size={28} color="#000" style={{ marginHorizontal: 8 }} />
-            </View>
-          )
         }}
       />
       <Tabs.Screen
@@ -51,7 +40,6 @@ export default function RootLayout() {
               />
             </View>
           ),
-          title: 'Search',
         }}
       />
       <Tabs.Screen
@@ -62,7 +50,6 @@ export default function RootLayout() {
               <Feather name="plus-square" size={size} color={color} />
             </View>
           ),
-          title: 'Add',
         }}
       />
       <Tabs.Screen
@@ -77,7 +64,6 @@ export default function RootLayout() {
               />
             </View>
           ),
-          title: 'Reels',
         }}
       />
       <Tabs.Screen
@@ -92,12 +78,11 @@ export default function RootLayout() {
               />
             </View>
           ),
-          title: 'Profile',
         }}
       />
     </Tabs>
   );
-}
+};
 
 const styles = StyleSheet.create({
   tabBar: {
