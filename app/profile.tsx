@@ -1,6 +1,8 @@
+import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, FlatList } from 'react-native';
-import { Ionicons, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { FlatList, Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FollowButton } from './components/ui';
+import { useTheme } from './theme/useTheme';
 
 // Sample data for user's posts
 const userPosts = [
@@ -31,8 +33,10 @@ const highlights = [
 ];
 
 const ProfileScreen = () => {
+  const theme = useTheme();
+  
   const [activeTab, setActiveTab] = useState('posts'); // posts, tagged, igTV
-  const [followStatus, setFollowStatus] = useState(false); // true if following
+  const [menuModalVisible, setMenuModalVisible] = useState(false);
 
   const renderGridItem = ({ item }) => (
     <TouchableOpacity style={styles.gridItem}>
@@ -50,14 +54,11 @@ const ProfileScreen = () => {
     </TouchableOpacity>
   );
 
-  const handleFollow = () => {
-    setFollowStatus(!followStatus);
-  };
-
   return (
-    <ScrollView style={styles.container}>
+    <>
+    <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Profile Header */}
-      <View style={styles.profileHeader}>
+      <View style={[styles.profileHeader, { borderBottomColor: theme.border }]}>
         <View style={styles.profileInfo}>
           <Image 
             source={{ uri: 'https://placehold.co/100x100/4A90E2/FFFFFF?text=Profile' }} 
@@ -65,40 +66,36 @@ const ProfileScreen = () => {
           />
           <View style={styles.profileStats}>
             <View style={styles.statItem}>
-              <Text style={styles.statNumber}>127</Text>
-              <Text style={styles.statLabel}>Posts</Text>
+              <Text style={[styles.statNumber, { color: theme.text }]}>127</Text>
+              <Text style={[styles.statLabel, { color: theme.textSecondary }]}>Posts</Text>
             </View>
             <View style={styles.statItem}>
-              <Text style={styles.statNumber}>1.2K</Text>
-              <Text style={styles.statLabel}>Followers</Text>
+              <Text style={[styles.statNumber, { color: theme.text }]}>1.2K</Text>
+              <Text style={[styles.statLabel, { color: theme.textSecondary }]}>Followers</Text>
             </View>
             <View style={styles.statItem}>
-              <Text style={styles.statNumber}>432</Text>
-              <Text style={styles.statLabel}>Following</Text>
+              <Text style={[styles.statNumber, { color: theme.text }]}>432</Text>
+              <Text style={[styles.statLabel, { color: theme.textSecondary }]}>Following</Text>
             </View>
           </View>
         </View>
         <View style={styles.profileEdit}>
-          <TouchableOpacity style={styles.profileActionButton} onPress={handleFollow}>
-            <Text style={styles.actionButtonText}>
-              {followStatus ? 'Following' : 'Follow'}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.profileActionButton, styles.messageButton]}>
-            <Text style={styles.messageButtonText}>Message</Text>
+          <FollowButton />
+          <TouchableOpacity style={[styles.profileActionButton, styles.messageButton, { backgroundColor: theme.text }]}>
+            <Text style={[styles.messageButtonText, { color: theme.background }]}>Message</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.profileActionButton}>
-            <Feather name="chevron-down" size={20} color="#000" />
+            <Feather name="chevron-down" size={20} color={theme.text} />
           </TouchableOpacity>
         </View>
       </View>
       
       {/* Profile Bio */}
       <View style={styles.bioContainer}>
-        <Text style={styles.username}>@username</Text>
-        <Text style={styles.fullName}>Full Stack Developer</Text>
-        <Text style={styles.bio}>Photography Enthusiast | Traveler | Tech Lover</Text>
-        <Text style={styles.bio}>https://myportfolio.com</Text>
+        <Text style={[styles.username, { color: theme.text }]}>@username</Text>
+        <Text style={[styles.fullName, { color: theme.text }]}>Full Stack Developer</Text>
+        <Text style={[styles.bio, { color: theme.text }]}>Photography Enthusiast | Traveler | Tech Lover</Text>
+        <Text style={[styles.bio, { color: theme.primary }]}>https://myportfolio.com</Text>
       </View>
       
       {/* Highlights */}
@@ -109,49 +106,49 @@ const ProfileScreen = () => {
         contentContainerStyle={styles.highlightsContent}
       >
         <TouchableOpacity style={styles.addHighlight}>
-          <View style={styles.addHighlightIcon}>
-            <Feather name="plus" size={24} color="#000" />
+          <View style={[styles.addHighlightIcon, { borderColor: theme.textSecondary }]}>
+            <Feather name="plus" size={24} color={theme.text} />
           </View>
-          <Text style={styles.addHighlightText}>New</Text>
+          <Text style={[styles.addHighlightText, { color: theme.text }]}>New</Text>
         </TouchableOpacity>
         {highlights.map(highlight => (
           <TouchableOpacity key={highlight.id} style={styles.highlightItem}>
-            <Image source={{ uri: highlight.avatar }} style={styles.highlightAvatar} />
-            <Text style={styles.highlightTitle}>{highlight.title}</Text>
+            <Image source={{ uri: highlight.avatar }} style={[styles.highlightAvatar, { borderColor: theme.textSecondary }]} />
+            <Text style={[styles.highlightTitle, { color: theme.text }]}>{highlight.title}</Text>
           </TouchableOpacity>
         ))}
       </ScrollView>
       
       {/* Tab Selector */}
-      <View style={styles.tabContainer}>
+      <View style={[styles.tabContainer, { borderTopColor: theme.border }]}>
         <TouchableOpacity 
-          style={[styles.tabButton, activeTab === 'posts' && styles.activeTab]}
+          style={[styles.tabButton, activeTab === 'posts' && { ...styles.activeTab, borderBottomColor: theme.text }]}
           onPress={() => setActiveTab('posts')}
         >
           <Ionicons 
             name={activeTab === 'posts' ? "grid" : "grid-outline"} 
             size={24} 
-            color={activeTab === 'posts' ? "#000" : "#8e8e8e"} 
+            color={activeTab === 'posts' ? theme.text : theme.textSecondary} 
           />
         </TouchableOpacity>
         <TouchableOpacity 
-          style={[styles.tabButton, activeTab === 'igTV' && styles.activeTab]}
+          style={[styles.tabButton, activeTab === 'igTV' && { ...styles.activeTab, borderBottomColor: theme.text }]}
           onPress={() => setActiveTab('igTV')}
         >
           <MaterialCommunityIcons 
             name={activeTab === 'igTV' ? "play-box" : "play-box-outline"} 
             size={24} 
-            color={activeTab === 'igTV' ? "#000" : "#8e8e8e"} 
+            color={activeTab === 'igTV' ? theme.text : theme.textSecondary} 
           />
         </TouchableOpacity>
         <TouchableOpacity 
-          style={[styles.tabButton, activeTab === 'tagged' && styles.activeTab]}
+          style={[styles.tabButton, activeTab === 'tagged' && { ...styles.activeTab, borderBottomColor: theme.text }]}
           onPress={() => setActiveTab('tagged')}
         >
           <Feather 
             name={activeTab === 'tagged' ? "user" : "user"} 
             size={24} 
-            color={activeTab === 'tagged' ? "#000" : "#8e8e8e"} 
+            color={activeTab === 'tagged' ? theme.text : theme.textSecondary} 
             style={{ opacity: activeTab === 'tagged' ? 1 : 0.5 }}
           />
         </TouchableOpacity>
@@ -186,10 +183,47 @@ const ProfileScreen = () => {
       
       {activeTab === 'igTV' && (
         <View style={styles.postsGrid}>
-          <Text style={styles.noContentText}>No IGTV videos yet</Text>
+          <Text style={[styles.noContentText, { color: theme.textSecondary }]}>No IGTV videos yet</Text>
         </View>
       )}
     </ScrollView>
+
+    {/* Menu Modal */}
+    <Modal
+      visible={menuModalVisible}
+      animationType="fade"
+      transparent={true}
+      onRequestClose={() => setMenuModalVisible(false)}
+    >
+      <TouchableOpacity 
+        style={styles.menuOverlay} 
+        onPress={() => setMenuModalVisible(false)}
+      />
+      <View style={styles.menuContainer}>
+        <TouchableOpacity style={styles.menuItem}>
+          <Feather name="settings" size={20} color="#000" />
+          <Text style={styles.menuItemText}>Settings</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.menuItem}>
+          <Feather name="save" size={20} color="#000" />
+          <Text style={styles.menuItemText}>Saved</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.menuItem}>
+          <Feather name="users" size={20} color="#000" />
+          <Text style={styles.menuItemText}>Close Friends</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.menuItem}>
+          <Feather name="alert-circle" size={20} color="#000" />
+          <Text style={styles.menuItemText}>Report a Problem</Text>
+        </TouchableOpacity>
+        <View style={styles.menuDivider} />
+        <TouchableOpacity style={styles.menuItem}>
+          <Feather name="log-out" size={20} color="#ed4956" />
+          <Text style={[styles.menuItemText, { color: '#ed4956' }]}>Logout</Text>
+        </TouchableOpacity>
+      </View>
+    </Modal>
+    </>
   );
 };
 
@@ -375,6 +409,37 @@ const styles = StyleSheet.create({
     paddingVertical: 40,
     fontSize: 16,
     color: '#8e8e8e',
+  },
+  menuOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+  },
+  menuContainer: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    width: 250,
+    backgroundColor: '#fff',
+    borderLeftWidth: 1,
+    borderLeftColor: '#efefef',
+    height: '100%',
+    paddingVertical: 60,
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+  },
+  menuItemText: {
+    marginLeft: 16,
+    fontSize: 16,
+    color: '#000',
+  },
+  menuDivider: {
+    height: 1,
+    backgroundColor: '#efefef',
+    marginVertical: 8,
   },
 });
 

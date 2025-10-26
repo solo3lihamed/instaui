@@ -1,13 +1,17 @@
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, TextInput } from 'react-native';
-import { Ionicons, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useTheme } from './theme/useTheme';
 
 const AddScreen = () => {
+  const theme = useTheme();
+  
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [caption, setCaption] = useState('');
   const [activeTab, setActiveTab] = useState('photo'); // photo or gallery
+  const [imagePicker, setImagePicker] = useState(false);
 
-  // Mock images for gallery
+  // Mock images for gallery - these match ImagePickerModal mock data
   const galleryImages = [
     'https://placehold.co/100x100/FF6B6B/FFFFFF?text=1',
     'https://placehold.co/100x100/4ECDC4/FFFFFF?text=2',
@@ -30,19 +34,19 @@ const AddScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { backgroundColor: theme.background, borderBottomColor: theme.border }]}>
         <TouchableOpacity>
-          <Text style={styles.headerCancel}>Cancel</Text>
+          <Text style={[styles.headerCancel, { color: theme.text }]}>Cancel</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>New Post</Text>
+        <Text style={[styles.headerTitle, { color: theme.text }]}>New Post</Text>
         <TouchableOpacity 
           onPress={handleNext} 
           disabled={!selectedImage}
-          style={[styles.nextButton, !selectedImage && styles.nextButtonDisabled]}
+          style={[styles.nextButton, !selectedImage && styles.nextButtonDisabled, { backgroundColor: !selectedImage ? theme.textSecondary : theme.text }]}
         >
-          <Text style={[styles.nextButtonText, !selectedImage && styles.nextButtonTextDisabled]}>Next</Text>
+          <Text style={[styles.nextButtonText, !selectedImage && styles.nextButtonTextDisabled, { color: !selectedImage ? theme.background : theme.background }]}>Next</Text>
         </TouchableOpacity>
       </View>
 
@@ -52,25 +56,25 @@ const AddScreen = () => {
           {selectedImage ? (
             <Image source={{ uri: selectedImage }} style={styles.selectedImage} />
           ) : (
-            <View style={styles.imagePlaceholder}>
-              <MaterialCommunityIcons name="image-plus" size={60} color="#ddd" />
-              <Text style={styles.placeholderText}>Select a photo</Text>
+            <View style={[styles.imagePlaceholder, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+              <MaterialCommunityIcons name="image-plus" size={60} color={theme.textSecondary} />
+              <Text style={[styles.placeholderText, { color: theme.textSecondary }]}>Select a photo</Text>
             </View>
           )}
 
           {/* Tab Selector */}
           <View style={styles.tabContainer}>
             <TouchableOpacity 
-              style={[styles.tabButton, activeTab === 'photo' && styles.activeTab]}
+              style={[styles.tabButton, activeTab === 'photo' && { ...styles.activeTab, borderBottomColor: theme.text }]}
               onPress={() => setActiveTab('photo')}
             >
-              <Text style={[styles.tabText, activeTab === 'photo' && styles.activeTabText]}>PHOTO</Text>
+              <Text style={[styles.tabText, activeTab === 'photo' && { ...styles.activeTabText, color: theme.text }]}>PHOTO</Text>
             </TouchableOpacity>
             <TouchableOpacity 
-              style={[styles.tabButton, activeTab === 'gallery' && styles.activeTab]}
+              style={[styles.tabButton, activeTab === 'gallery' && { ...styles.activeTab, borderBottomColor: theme.text }]}
               onPress={() => setActiveTab('gallery')}
             >
-              <Text style={[styles.tabText, activeTab === 'gallery' && styles.activeTabText]}>GALLERY</Text>
+              <Text style={[styles.tabText, activeTab === 'gallery' && { ...styles.activeTabText, color: theme.text }]}>GALLERY</Text>
             </TouchableOpacity>
           </View>
 
@@ -92,9 +96,9 @@ const AddScreen = () => {
               </ScrollView>
             </View>
           ) : (
-            <View style={styles.cameraPlaceholder}>
-              <Feather name="camera" size={40} color="#ddd" />
-              <Text style={styles.cameraText}>Take a photo</Text>
+            <View style={[styles.cameraPlaceholder, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+              <Feather name="camera" size={40} color={theme.textSecondary} />
+              <Text style={[styles.cameraText, { color: theme.textSecondary }]}>Take a photo</Text>
             </View>
           )}
         </View>
@@ -102,25 +106,25 @@ const AddScreen = () => {
         {/* Caption Input */}
         <View style={styles.captionContainer}>
           <TextInput
-            style={styles.captionInput}
+            style={[styles.captionInput, { color: theme.text }]}
             placeholder="Write a caption..."
-            placeholderTextColor="#8e8e8e"
+            placeholderTextColor={theme.textSecondary}
             value={caption}
             onChangeText={setCaption}
             multiline
           />
-          <View style={styles.suggestionsContainer}>
+          <View style={[styles.suggestionsContainer, { borderTopColor: theme.border }]}>
             <TouchableOpacity style={styles.suggestionItem}>
-              <Feather name="hash" size={16} color="#000" />
-              <Text style={styles.suggestionText}>Tag People</Text>
+              <Feather name="hash" size={16} color={theme.text} />
+              <Text style={[styles.suggestionText, { color: theme.text }]}>Tag People</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.suggestionItem}>
-              <Feather name="map-pin" size={16} color="#000" />
-              <Text style={styles.suggestionText}>Add Location</Text>
+              <Feather name="map-pin" size={16} color={theme.text} />
+              <Text style={[styles.suggestionText, { color: theme.text }]}>Add Location</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.suggestionItem}>
-              <Feather name="feather" size={16} color="#000" />
-              <Text style={styles.suggestionText}>Advanced Settings</Text>
+              <Feather name="feather" size={16} color={theme.text} />
+              <Text style={[styles.suggestionText, { color: theme.text }]}>Advanced Settings</Text>
             </TouchableOpacity>
           </View>
         </View>

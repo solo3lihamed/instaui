@@ -1,6 +1,8 @@
+import { Feather } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, ScrollView, Image, TouchableOpacity, FlatList, Dimensions } from 'react-native';
-import { Ionicons, Feather } from '@expo/vector-icons';
+import { Dimensions, FlatList, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { FollowButton } from './components/ui';
+import { useTheme } from './theme/useTheme';
 
 const { width } = Dimensions.get('window');
 
@@ -33,6 +35,8 @@ const recentSearches = [
 ];
 
 const SearchScreen = () => {
+  const theme = useTheme();
+  
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('top');
 
@@ -56,9 +60,9 @@ const SearchScreen = () => {
     <FlatList
       data={topSearches}
       renderItem={({ item }) => (
-        <TouchableOpacity style={styles.topSearchItem}>
-          <Feather name={item.icon as any} size={20} color="#000" style={styles.topSearchIcon} />
-          <Text style={styles.topSearchText}>{item.name}</Text>
+        <TouchableOpacity style={[styles.topSearchItem, { backgroundColor: theme.surface }]}>
+          <Feather name={item.icon as any} size={20} color={theme.text} style={styles.topSearchIcon} />
+          <Text style={[styles.topSearchText, { color: theme.text }]}>{item.name}</Text>
         </TouchableOpacity>
       )}
       keyExtractor={item => item.id}
@@ -72,13 +76,11 @@ const SearchScreen = () => {
     <FlatList
       data={accounts}
       renderItem={({ item }) => (
-        <TouchableOpacity style={styles.accountItem}>
+        <View style={styles.accountItem}>
           <Image source={{ uri: item.avatar }} style={styles.accountAvatar} />
-          <Text style={styles.accountUsername}>{item.username}</Text>
-          <TouchableOpacity style={styles.followButton}>
-            <Text style={styles.followButtonText}>Follow</Text>
-          </TouchableOpacity>
-        </TouchableOpacity>
+          <Text style={[styles.accountUsername, { color: theme.text }]}>{item.username}</Text>
+          <FollowButton />
+        </View>
       )}
       keyExtractor={item => item.id}
     />
@@ -86,11 +88,11 @@ const SearchScreen = () => {
 
   const renderRecentSearches = () => (
     <View>
-      <Text style={styles.sectionTitle}>Recent searches</Text>
+      <Text style={[styles.sectionTitle, { color: theme.text }]}>Recent searches</Text>
       {recentSearches.map((item) => (
         <TouchableOpacity key={item.id} style={styles.recentSearchItem}>
-          <Feather name="clock" size={20} color="#8e8e8e" />
-          <Text style={styles.recentSearchText}>{item.query}</Text>
+          <Feather name="clock" size={20} color={theme.textSecondary} />
+          <Text style={[styles.recentSearchText, { color: theme.text }]}>{item.query}</Text>
         </TouchableOpacity>
       ))}
       <TouchableOpacity style={styles.clearAllButton}>
@@ -104,9 +106,9 @@ const SearchScreen = () => {
       // If there's a search query, show filtered results
       return (
         <>
-          <Text style={styles.sectionTitle}>Accounts</Text>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>Accounts</Text>
           {renderAccounts()}
-          <Text style={styles.sectionTitle}>Posts</Text>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>Posts</Text>
           {renderTopPosts()}
         </>
       );
@@ -115,59 +117,59 @@ const SearchScreen = () => {
     // If no search query, show default content
     return (
       <>
-        <View style={styles.tabContainer}>
+        <View style={[styles.tabContainer, { borderBottomColor: theme.border }]}>
           <TouchableOpacity 
-            style={[styles.tabButton, activeTab === 'top' && styles.activeTab]}
+            style={[styles.tabButton, activeTab === 'top' && { ...styles.activeTab, borderBottomColor: theme.text }]}
             onPress={() => setActiveTab('top')}
           >
-            <Text style={[styles.tabText, activeTab === 'top' && styles.activeTabText]}>Top</Text>
+            <Text style={[styles.tabText, activeTab === 'top' && { ...styles.activeTabText, color: theme.text }]}>Top</Text>
           </TouchableOpacity>
           <TouchableOpacity 
-            style={[styles.tabButton, activeTab === 'accounts' && styles.activeTab]}
+            style={[styles.tabButton, activeTab === 'accounts' && { ...styles.activeTab, borderBottomColor: theme.text }]}
             onPress={() => setActiveTab('accounts')}
           >
-            <Text style={[styles.tabText, activeTab === 'accounts' && styles.activeTabText]}>Accounts</Text>
+            <Text style={[styles.tabText, activeTab === 'accounts' && { ...styles.activeTabText, color: theme.text }]}>Accounts</Text>
           </TouchableOpacity>
         </View>
 
         {activeTab === 'top' ? (
           <>
             {renderTopSearches()}
-            <Text style={styles.sectionTitle}>Posts</Text>
+            <Text style={[styles.sectionTitle, { color: theme.text }]}>Posts</Text>
             {renderTopPosts()}
           </>
         ) : (
           renderAccounts()
         )}
 
-        <Text style={styles.sectionTitle}>Suggestions for you</Text>
+        <Text style={[styles.sectionTitle, { color: theme.text }]}>Suggestions for you</Text>
         {renderAccounts()}
       </>
     );
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Search Bar */}
-      <View style={styles.searchContainer}>
-        <View style={styles.searchInputContainer}>
-          <Feather name="search" size={20} color="#8e8e8e" style={styles.searchIcon} />
+      <View style={[styles.searchContainer, { backgroundColor: theme.background, borderBottomColor: theme.border }]}>
+        <View style={[styles.searchInputContainer, { backgroundColor: theme.surface }]}>
+          <Feather name="search" size={20} color={theme.textSecondary} style={styles.searchIcon} />
           <TextInput
-            style={styles.searchInput}
+            style={[styles.searchInput, { color: theme.text }]}
             placeholder="Search"
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholderTextColor="#8e8e8e"
+            placeholderTextColor={theme.textSecondary}
           />
           {searchQuery ? (
             <TouchableOpacity onPress={() => setSearchQuery('')}>
-              <Feather name="x" size={20} color="#8e8e8e" />
+              <Feather name="x" size={20} color={theme.textSecondary} />
             </TouchableOpacity>
           ) : null}
         </View>
       </View>
 
-      <ScrollView style={styles.content}>
+      <ScrollView style={[styles.content, { backgroundColor: theme.background }]}>
         {renderContent()}
       </ScrollView>
     </View>
@@ -288,16 +290,6 @@ const styles = StyleSheet.create({
   accountUsername: {
     flex: 1,
     fontSize: 16,
-    fontWeight: '600',
-  },
-  followButton: {
-    backgroundColor: '#000',
-    paddingHorizontal: 16,
-    paddingVertical: 6,
-    borderRadius: 4,
-  },
-  followButtonText: {
-    color: '#fff',
     fontWeight: '600',
   },
   recentSearchItem: {

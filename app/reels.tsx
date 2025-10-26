@@ -1,6 +1,7 @@
+import { AntDesign, Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import React, { useRef, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions } from 'react-native';
-import { Ionicons, Feather, MaterialCommunityIcons, AntDesign } from '@expo/vector-icons';
+import { Animated, Dimensions, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useTheme } from './theme/useTheme';
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -39,8 +40,13 @@ const reels = [
 ];
 
 const ReelsScreen = () => {
+  const theme = useTheme();
+  
   const [activeReelIndex, setActiveReelIndex] = useState(0);
   const [reelsData, setReelsData] = useState(reels);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const flatListRef = useRef(null);
 
   const handleLike = (reelId: string) => {
     setReelsData(prev => 
@@ -56,8 +62,17 @@ const ReelsScreen = () => {
     );
   };
 
-  const renderReel = (reel, index) => {
-    if (index !== activeReelIndex) return null;
+  const onViewableItemsChanged = useRef(({ viewableItems }) => {
+    if (viewableItems.length > 0) {
+      setActiveReelIndex(viewableItems[0].index);
+    }
+  }).current;
+
+  const viewabilityConfig = useRef({
+    itemVisiblePercentThreshold: 50,
+  }).current;
+
+  const renderReel = ({ item: reel, index }) => {
     
     return (
       <View key={reel.id} style={styles.reelContainer}>
@@ -102,11 +117,11 @@ const ReelsScreen = () => {
         {/* Right Side Info */}
         <View style={styles.rightInfo}>
           <View style={styles.userInfo}>
-            <Text style={styles.username}>@{reel.username}</Text>
-            <Text style={styles.caption}>{reel.caption}</Text>
+            <Text style={[styles.username, { color: '#fff' }]}>@{reel.username}</Text>
+            <Text style={[styles.caption, { color: '#fff' }]}>{reel.caption}</Text>
             <View style={styles.musicInfo}>
               <MaterialCommunityIcons name="music-note" size={16} color="#fff" />
-              <Text style={styles.musicText}>Original Sound - {reel.username}</Text>
+              <Text style={[styles.musicText, { color: '#fff' }]}>Original Sound - {reel.username}</Text>
             </View>
           </View>
           
@@ -128,27 +143,19 @@ const ReelsScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* Reels View */}
-      {reels.map((reel, index) => renderReel(reel, index))}
-      
-      {/* Bottom Navigation for Reels */}
-      <View style={styles.reelsBottomNav}>
-        <TouchableOpacity style={styles.navButton}>
-          <Feather name="home" size={24} color="#fff" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navButton}>
-          <Feather name="search" size={24} color="#fff" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navButton}>
-          <Feather name="plus-square" size={24} color="#fff" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navButton}>
-          <Feather name="heart" size={24} color="#fff" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navButton}>
-          <Ionicons name="person-outline" size={24} color="#fff" />
-        </TouchableOpacity>
-      </View>
+      <FlatList
+        ref={flatListRef}
+        data={reelsData}
+        renderItem={renderReel}
+        keyExtractor={item => item.id}
+        pagingEnabled
+        scrollEventThrottle={16}
+        onViewableItemsChanged={onViewableItemsChanged}
+        viewabilityConfig={viewabilityConfig}
+        scrollIndicatorInsets={{ bottom: 0 }}
+        snapToAlignment="start"
+        decelerationRate="fast"
+      />
     </View>
   );
 };
@@ -156,7 +163,7 @@ const ReelsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#000000',
   },
   reelContainer: {
     flex: 1,

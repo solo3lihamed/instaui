@@ -1,16 +1,24 @@
+import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
-import { Ionicons, MaterialCommunityIcons, Feather } from '@expo/vector-icons';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, useColorScheme, View } from 'react-native';
+import { COLORS } from './theme/colors';
 
 export default function RootLayout() {
+  const colorScheme = useColorScheme();
+  const theme = colorScheme === 'dark' ? COLORS.dark : COLORS.light;
+
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#000',
-        tabBarInactiveTintColor: '#8e8e8e',
-        tabBarStyle: styles.tabBar,
+        tabBarActiveTintColor: theme.text,
+        tabBarInactiveTintColor: theme.textSecondary,
+        tabBarStyle: [styles.tabBar, { 
+          backgroundColor: theme.background,
+          borderTopColor: theme.border,
+        }],
         tabBarShowLabel: false,
         headerShown: false,
+        sceneStyle: { backgroundColor: theme.background }
       }}
     >
       <Tabs.Screen
@@ -27,14 +35,23 @@ export default function RootLayout() {
           ),
           title: 'Home',
           headerShown: true,
-          headerTitle: 'Instagram',
+          headerTitle: () => (
+            <Text style={{ fontSize: 28, fontWeight: '700', color: theme.text }}>Instagram</Text>
+          ),
           headerTitleAlign: 'center',
+          headerStyle: {
+            backgroundColor: theme.background,
+            borderBottomColor: theme.border,
+            borderBottomWidth: 1,
+          },
           headerRight: () => (
             <View style={{ flexDirection: 'row', marginRight: 16 }}>
-              <Ionicons name="paper-plane-outline" size={28} color="#000" style={{ marginHorizontal: 8 }} />
-              <Feather name="compass" size={28} color="#000" style={{ marginHorizontal: 8 }} />
-              <Feather name="heart" size={28} color="#000" style={{ marginHorizontal: 8 }} />
-              <Feather name="user" size={28} color="#000" style={{ marginHorizontal: 8 }} />
+              <TouchableOpacity style={{ marginHorizontal: 12 }}>
+                <Ionicons name="paper-plane-outline" size={26} color={theme.text} />
+              </TouchableOpacity>
+              <TouchableOpacity style={{ marginHorizontal: 12 }}>
+                <Feather name="heart" size={26} color={theme.text} />
+              </TouchableOpacity>
             </View>
           )
         }}
@@ -95,15 +112,45 @@ export default function RootLayout() {
           title: 'Profile',
         }}
       />
+      <Tabs.Screen
+        name="notifications"
+        options={{
+          tabBarIcon: ({ color, size, focused }) => (
+            <View style={styles.tabIconContainer}>
+              <Ionicons 
+                name={focused ? "notifications" : "notifications-outline"} 
+                size={size} 
+                color={color} 
+              />
+            </View>
+          ),
+          title: 'Notifications',
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="messages"
+        options={{
+          tabBarIcon: ({ color, size, focused }) => (
+            <View style={styles.tabIconContainer}>
+              <Ionicons 
+                name={focused ? "mail" : "mail-outline"} 
+                size={size} 
+                color={color} 
+              />
+            </View>
+          ),
+          title: 'Messages',
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: '#fff',
     borderTopWidth: 1,
-    borderTopColor: '#efefef',
     height: 60,
     paddingBottom: 8,
     paddingTop: 8,
